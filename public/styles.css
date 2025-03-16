@@ -1,0 +1,284 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 20px 0;
+}
+
+header h1 {
+    color: #4a6ee0;
+    margin-bottom: 10px;
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.message {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message.user {
+    align-items: flex-end;
+}
+
+.message.assistant {
+    align-items: flex-start;
+}
+
+.message-content {
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user .message-content {
+    background-color: #4a6ee0;
+    color: white;
+    border-top-right-radius: 4px;
+}
+
+.assistant .message-content {
+    background-color: #f0f2f5;
+    color: #333;
+    border-top-left-radius: 4px;
+}
+
+.assistant .message-content ul {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.chat-input {
+    padding: 15px;
+    background-color: white;
+    border-top: 1px solid #eaeaea;
+}
+
+#message-form {
+    display: flex;
+    align-items: center;
+}
+
+#user-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#user-input:focus {
+    border-color: #4a6ee0;
+}
+
+#send-button {
+    background-color: #4a6ee0;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+#send-button:hover {
+    background-color: #3a5bc7;
+}
+
+#send-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.typing-indicator {
+    display: flex;
+    padding: 12px 16px;
+    background-color: #f0f2f5;
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    width: fit-content;
+    margin-bottom: 20px;
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    background-color: #93a0b5;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 2px;
+    animation: bounce 1.3s linear infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+    0%, 60%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-4px);
+    }
+}
+
+/* Tool Approval UI */
+.tool-approval {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    margin-bottom: 16px;
+}
+
+.tool-approval .message-content {
+    padding: 16px;
+}
+
+.tool-approval-header {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.tool-approval-details {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 12px;
+}
+
+.tool-approval-warning {
+    display: flex;
+    background-color: #fff3e0;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+}
+
+.warning-icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.warning-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.tool-details {
+    background-color: #e8f5e9;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.tool-approval-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.tool-approval-buttons button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.deny-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.deny-button:hover {
+    background-color: #d32f2f;
+}
+
+.allow-once-button {
+    background-color: #2196f3;
+    color: white;
+}
+
+.allow-once-button:hover {
+    background-color: #1976d2;
+}
+
+.allow-chat-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.allow-chat-button:hover {
+    background-color: #388e3c;
+}
+
+/* System message style */
+.system .message-content {
+    background-color: #ffecb3;
+    color: #333;
+    border-radius: 8px;
+    font-style: italic;
+}
+
+/* Shake animation for tool approval */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+} 
