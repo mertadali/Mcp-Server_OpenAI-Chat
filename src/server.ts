@@ -312,6 +312,77 @@ app.post("/api/tool-response", async (req, res) => {
 
 // Serve the main HTML file for any other routes
 // Diğer tüm rotalar için ana HTML dosyasını sun
+
+// Add Google OAuth callback route
+// Google OAuth callback rotası ekle
+app.get("/google/callback", (req, res) => {
+  const code = req.query.code as string;
+  
+  if (!code) {
+    return res.status(400).send("Authorization code is missing");
+  }
+  
+  // Display a page with instructions to copy the code
+  res.send(`
+    <html>
+      <head>
+        <title>Google Calendar Authorization</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+          }
+          .code-box {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 20px 0;
+            word-break: break-all;
+          }
+          .instructions {
+            margin-bottom: 20px;
+          }
+          button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Google Calendar Authorization</h1>
+        <div class="instructions">
+          <p>Please copy the authorization code below and paste it in the chat when prompted:</p>
+        </div>
+        <div class="code-box" id="auth-code">${code}</div>
+        <button onclick="copyCode()">Copy Code</button>
+        <p>After copying the code, you can close this window and return to the Todo Assistant.</p>
+        
+        <script>
+          function copyCode() {
+            const codeElement = document.getElementById('auth-code');
+            const range = document.createRange();
+            range.selectNode(codeElement);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            alert('Code copied to clipboard!');
+          }
+        </script>
+      </body>
+    </html>
+  `);
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });

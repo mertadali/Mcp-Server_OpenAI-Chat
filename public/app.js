@@ -243,11 +243,43 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'remove_todo':
                 approvalMessage += `<div class="tool-details">Remove todo with ID: ${functionArgs.id}</div>`;
                 break;
+            case 'remove_all_todos':
+                approvalMessage += `<div class="tool-details">Remove all todos from your list</div>`;
+                break;
             case 'toggle_todo':
                 approvalMessage += `<div class="tool-details">Toggle completion status of todo with ID: ${functionArgs.id}</div>`;
                 break;
             case 'get_todos':
                 approvalMessage += `<div class="tool-details">Get all todos</div>`;
+                break;
+            case 'add_todo_to_calendar':
+                approvalMessage += `<div class="tool-details">Add todo with ID: ${functionArgs.todoId} to calendar on ${functionArgs.date} at ${functionArgs.time}</div>`;
+                break;
+            case 'get_calendar_events':
+                if (functionArgs.date) {
+                    approvalMessage += `<div class="tool-details">Get calendar events for date: ${functionArgs.date}</div>`;
+                } else {
+                    approvalMessage += `<div class="tool-details">Get all calendar events</div>`;
+                }
+                break;
+            case 'add_todo_to_google_calendar':
+                approvalMessage += `<div class="tool-details">Add todo with ID: ${functionArgs.todoId} to Google Calendar on ${functionArgs.date} at ${functionArgs.time}</div>`;
+                break;
+            case 'get_google_calendar_events':
+                if (functionArgs.date) {
+                    approvalMessage += `<div class="tool-details">Get Google Calendar events for date: ${functionArgs.date}</div>`;
+                } else {
+                    approvalMessage += `<div class="tool-details">Get all Google Calendar events</div>`;
+                }
+                break;
+            case 'setup_google_calendar':
+                approvalMessage += `<div class="tool-details">Setup Google Calendar with provided credentials</div>`;
+                break;
+            case 'authenticate_google_calendar':
+                approvalMessage += `<div class="tool-details">Authenticate Google Calendar with code: ${functionArgs.code}</div>`;
+                break;
+            case 'check_google_calendar_auth':
+                approvalMessage += `<div class="tool-details">Check Google Calendar authentication status</div>`;
                 break;
         }
         

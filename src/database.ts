@@ -10,6 +10,15 @@ export interface Todo {
   createdAt: string;
 }
 
+export interface CalendarEvent {
+  id: number;
+  todoId: number;
+  title: string;
+  date: string;
+  time: string;
+  createdAt: string;
+}
+
 // Veritabanı dosyasının konumunu belirle
 const DB_LOCATION = join(homedir(), "openai-todos");
 const dataDir = resolve(DB_LOCATION);
@@ -33,6 +42,20 @@ db.exec(`
     text TEXT NOT NULL,
     completed BOOLEAN NOT NULL DEFAULT 0,
     createdAt TEXT NOT NULL
+  )
+`);
+
+// Create calendar events table if it doesn't exist
+// Takvim etkinlikleri tablosu yoksa oluştur
+db.exec(`
+  CREATE TABLE IF NOT EXISTS calendar_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    todoId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (todoId) REFERENCES todos(id) ON DELETE CASCADE
   )
 `);
 
@@ -70,6 +93,21 @@ export const dbOperations = {
     const info = stmt.run(id);
     return info.changes > 0;
   },
+  
+  // Remove all todos
+  // Tüm todoları sil
+  removeAllTodos: (): number => {
+    // Önce ilişkili tüm takvim etkinliklerini sil
+    const deleteCalendarStmt = db.prepare("DELETE FROM calendar_events");
+    deleteCalendarStmt.run();
+    
+    // Sonra tüm todoları sil
+    const deleteTodosStmt = db.prepare("DELETE FROM todos");
+    const info = deleteTodosStmt.run();
+    
+    // Silinen todo sayısını döndür
+    return info.changes;
+  },
 
   // Get a todo by id
   // ID'ye göre todo getir
@@ -89,5 +127,48 @@ export const dbOperations = {
     stmt.run(newStatus, id);
     
     return dbOperations.getTodoById(id);
+  },
+
+  // Add a todo to calendar
+  // Todo'yu takvime ekle
+  addTodoToCalendar: (todoId: number, date: string, time: string): CalendarEvent | undefined => {
+    const todo = dbOperations.getTodoById(todoId);
+    if (!todo) return undefined;
+    
+    const createdAt = new Date().toISOString();
+    const stmt = db.prepare(
+      "INSERT INTO calendar_events (todoId, title, date, time, createdAt) VALUES (?, ?, ?, ?, ?)"
+    );
+    const info = stmt.run(todoId, todo.text, date, time, createdAt);
+    
+    return {
+      id: info.lastInsertRowid as number,
+      todoId,
+      title: todo.text,
+      date,
+      time,
+      createdAt
+    };
+  },
+  
+  // Get calendar events
+  // Takvim etkinliklerini getir
+  getCalendarEvents: (): CalendarEvent[] => {
+    const stmt = db.prepare("SELECT * FROM calendar_events ORDER BY date ASC, time ASC");
+    return stmt.all() as CalendarEvent[];
+  },
+  
+  // Get calendar events for a specific date
+  // Belirli bir tarih için takvim etkinliklerini getir
+  getCalendarEventsByDate: (date: string): CalendarEvent[] => {
+    const stmt = db.prepare("SELECT * FROM calendar_events WHERE date = ? ORDER BY time ASC");
+    return stmt.all(date) as CalendarEvent[];
+  },
+  
+  // Get calendar events for a specific todo
+  // Belirli bir todo için takvim etkinliklerini getir
+  getCalendarEventsByTodoId: (todoId: number): CalendarEvent[] => {
+    const stmt = db.prepare("SELECT * FROM calendar_events WHERE todoId = ?");
+    return stmt.all(todoId) as CalendarEvent[];
   }
 };
