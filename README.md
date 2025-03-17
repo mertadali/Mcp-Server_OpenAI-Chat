@@ -2,6 +2,30 @@
 
 A full-stack application that uses OpenAI's Assistant API to manage a todo list with Google Calendar integration. The application includes a Node.js Express server backend and a responsive web frontend.
 
+
+
+<p align="center">
+  <img src="./images/ekran1.png" width="920" alt="Todo Assistant Ana Ekranı">
+  <br>
+  <em>Todo Assistant Main screen</em>
+</p>
+
+<p align="center">
+  <img src="./images/ekran2.png" width="920" alt="Tool Onay Ekranı">
+  <br>
+  <em>Tool approval screen </em>
+</p>
+
+<p align="center">
+  <img src="./images/ekran3.png" width="920" alt="Google Takvim Entegrasyonu">
+  <br>
+  <em>Google calendar screen </em>
+</p>
+
+
+
+
+
 ## Features
 
 - Chat-based interface to manage your todo list
