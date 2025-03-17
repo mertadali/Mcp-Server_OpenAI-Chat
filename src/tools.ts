@@ -1,6 +1,7 @@
 import { dbOperations } from "./database.js";
 
 // Function to execute tool calls from OpenAI Assistant
+// OpenAI Asistan'dan gelen araç çağrılarını yürüten fonksiyon
 export async function executeToolCalls(toolCalls: any[]) {
   const results = [];
 
@@ -11,6 +12,7 @@ export async function executeToolCalls(toolCalls: any[]) {
       
       let result;
       
+      // Çağrılan fonksiyona göre ilgili işleyiciyi çalıştır
       switch (functionName) {
         case "add_todo":
           result = await handleAddTodo(functionArgs);
@@ -28,6 +30,7 @@ export async function executeToolCalls(toolCalls: any[]) {
           result = { error: `Unknown function: ${functionName}` };
       }
       
+      // Sonuçları OpenAI'ye dönecek formatta hazırla
       results.push({
         tool_call_id: toolCall.id,
         output: JSON.stringify(result),
@@ -39,8 +42,10 @@ export async function executeToolCalls(toolCalls: any[]) {
 }
 
 // Handler for add_todo function
+// Yeni yapılacak iş ekleyen fonksiyon
 async function handleAddTodo({ text }: { text: string }) {
   try {
+    // Veritabanına yeni todo ekle
     const todo = dbOperations.addTodo(text);
     return {
       success: true,
@@ -58,10 +63,13 @@ async function handleAddTodo({ text }: { text: string }) {
 }
 
 // Handler for get_todos function
+// Tüm yapılacak işleri getiren fonksiyon
 async function handleGetTodos() {
   try {
+    // Veritabanından tüm todoları getir
     const todos = dbOperations.getTodos();
     
+    // Eğer hiç todo yoksa özel mesaj döndür
     if (todos.length === 0) {
       return {
         success: true,
@@ -86,10 +94,13 @@ async function handleGetTodos() {
 }
 
 // Handler for remove_todo function
+// ID'ye göre yapılacak işi silen fonksiyon
 async function handleRemoveTodo({ id }: { id: number }) {
   try {
+    // Önce ID'ye göre todo'yu bul
     const todo = dbOperations.getTodoById(id);
     
+    // Todo bulunamazsa hata döndür
     if (!todo) {
       return {
         success: false,
@@ -97,6 +108,7 @@ async function handleRemoveTodo({ id }: { id: number }) {
       };
     }
     
+    // Todo'yu sil
     dbOperations.removeTodo(id);
     
     return {
@@ -114,10 +126,13 @@ async function handleRemoveTodo({ id }: { id: number }) {
 }
 
 // Handler for toggle_todo function
+// Yapılacak işin tamamlanma durumunu değiştiren fonksiyon
 async function handleToggleTodo({ id }: { id: number }) {
   try {
+    // Todo'nun tamamlanma durumunu değiştir
     const updatedTodo = dbOperations.toggleTodoCompleted(id);
     
+    // Todo bulunamazsa hata döndür
     if (!updatedTodo) {
       return {
         success: false,

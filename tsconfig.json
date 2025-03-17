@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "sourceMap": true,
-    "inlineSources": true
+    "target": "ES2022",                    // JavaScript çıktısının hedef sürümü
+    "module": "NodeNext",                  // Modül sistemi (Node.js'in en son modül sistemini kullanır)
+    "moduleResolution": "NodeNext",        // Modül çözümleme stratejisi
+    "outDir": "./dist",                    // Derlenen JavaScript dosyalarının çıktı dizini
+    "rootDir": "./src",                    // TypeScript kaynak dosyalarının kök dizini
+    "strict": true,                        // Tüm katı tip kontrollerini etkinleştirir
+    "esModuleInterop": true,               // CommonJS ve ES Modules arasında daha iyi uyumluluk sağlar
+    "skipLibCheck": true,                  // Tüm bildirim dosyalarının (.d.ts) tip kontrolünü atlar
+    "forceConsistentCasingInFileNames": true, // Dosya adlarında tutarlı büyük/küçük harf kullanımını zorunlu kılar
+    "sourceMap": true,                     // Hata ayıklama için kaynak haritaları oluşturur
+    "inlineSources": true                  // Kaynak kodunu kaynak haritalarına dahil eder
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],                 // Derlenecek dosyaları belirtir (src altındaki tüm dosyalar)
+  "exclude": ["node_modules"]              // Derlemeden hariç tutulacak dosyaları belirtir
 }

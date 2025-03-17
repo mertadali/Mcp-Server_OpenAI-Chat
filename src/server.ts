@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Get the directory name
+// Dosya yolunu al
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -17,12 +18,15 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from the public directory
+// Public klasöründeki statik dosyaları sunmak için
 app.use(express.static(path.join(__dirname, "../public")));
 
 // Store threads in memory (in a production app, this would be in a database)
+// Kullanıcı thread'lerini hafızada sakla (gerçek uygulamada veritabanında olmalı)
 const userThreads = new Map<string, string>();
 
 // Initialize the assistant
+// OpenAI asistanını başlat
 let assistant: any;
 (async () => {
   try {
@@ -35,6 +39,7 @@ let assistant: any;
 })();
 
 // Create or get a thread for a user
+// Kullanıcı için thread oluştur veya mevcut olanı getir
 app.post("/api/thread", async (req, res) => {
   try {
     const { userId } = req.body;
@@ -59,6 +64,7 @@ app.post("/api/thread", async (req, res) => {
 });
 
 // Send a message and get a response
+// Mesaj gönder ve yanıt al
 app.post("/api/chat", async (req, res) => {
   try {
     const { userId, message } = req.body;
@@ -76,6 +82,7 @@ app.post("/api/chat", async (req, res) => {
     }
     
     // Check for any active runs and cancel them before proceeding
+    // Devam etmeden önce aktif çalışmaları kontrol et ve iptal et
     try {
       const runs = await openai.beta.threads.runs.list(threadId);
       const activeRuns = runs.data.filter(run => 
@@ -100,25 +107,30 @@ app.post("/api/chat", async (req, res) => {
     }
     
     // Add user message to thread
+    // Kullanıcı mesajını thread'e ekle
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
       content: message,
     });
     
     // Run the assistant
+    // Asistanı çalıştır
     const run = await openai.beta.threads.runs.create(threadId, {
       assistant_id: assistant.id,
     });
     
     // Poll for completion
+    // Tamamlanma durumunu kontrol et
     let runStatus = await pollRunStatus(threadId, run.id);
     
     // Check if tool calls are required
+    // Araç çağrıları gerekiyorsa kontrol et
     if (runStatus.status === "requires_action" && 
         runStatus.required_action?.type === "submit_tool_outputs") {
       const toolCalls = runStatus.required_action.submit_tool_outputs.tool_calls;
       
       // Instead of executing tool calls automatically, send them to the client for approval
+      // Araç çağrılarını otomatik yürütmek yerine, onay için istemciye gönder
       return res.json({
         requiresAction: true,
         toolCalls: toolCalls,
@@ -128,9 +140,11 @@ app.post("/api/chat", async (req, res) => {
     }
     
     // Get the assistant's messages
+    // Asistanın mesajlarını al
     const messages = await openai.beta.threads.messages.list(threadId);
     
     // Find the most recent assistant message
+    // En son asistan mesajını bul
     const assistantMessages = messages.data
       .filter(msg => msg.role === "assistant")
       .sort((a, b) => 
@@ -142,6 +156,7 @@ app.post("/api/chat", async (req, res) => {
     }
     
     // Format and return the response
+    // Yanıtı formatla ve döndür
     const latestMessage = assistantMessages[0];
     const content = latestMessage.content.map(item => {
       if (item.type === "text") {
@@ -162,6 +177,7 @@ app.post("/api/chat", async (req, res) => {
 });
 
 // Helper function to poll run status
+// Çalışma durumunu kontrol eden yardımcı fonksiyon
 async function pollRunStatus(threadId: string, runId: string) {
   let runStatus;
   
@@ -177,6 +193,7 @@ async function pollRunStatus(threadId: string, runId: string) {
     }
     
     // Wait for 1 second before checking again
+    // Tekrar kontrol etmeden önce 1 saniye bekle
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
   
@@ -184,6 +201,7 @@ async function pollRunStatus(threadId: string, runId: string) {
 }
 
 // Get chat history for a thread
+// Bir thread için sohbet geçmişini al
 app.get("/api/history/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -196,6 +214,7 @@ app.get("/api/history/:userId", async (req, res) => {
     const messages = await openai.beta.threads.messages.list(threadId);
     
     // Format messages
+    // Mesajları formatla
     const formattedMessages = messages.data.map(msg => {
       const content = msg.content.map(item => {
         if (item.type === "text") {
@@ -219,6 +238,7 @@ app.get("/api/history/:userId", async (req, res) => {
 });
 
 // Handle tool approval or denial
+// Araç onayını veya reddini işle
 app.post("/api/tool-response", async (req, res) => {
   try {
     const { threadId, runId, approved, toolCalls } = req.body;
@@ -229,20 +249,25 @@ app.post("/api/tool-response", async (req, res) => {
     
     if (approved) {
       // Execute the approved tool calls
+      // Onaylanan araç çağrılarını yürüt
       const toolOutputs = await executeToolCalls(toolCalls);
       
       // Submit tool outputs back to the run
+      // Araç çıktılarını çalışmaya geri gönder
       await openai.beta.threads.runs.submitToolOutputs(threadId, runId, {
         tool_outputs: toolOutputs,
       });
       
       // Continue polling until complete
+      // Tamamlanana kadar kontrol etmeye devam et
       const runStatus = await pollRunStatus(threadId, runId);
       
       // Get the assistant's messages
+      // Asistanın mesajlarını al
       const messages = await openai.beta.threads.messages.list(threadId);
       
       // Find the most recent assistant message
+      // En son asistan mesajını bul
       const assistantMessages = messages.data
         .filter(msg => msg.role === "assistant")
         .sort((a, b) => 
@@ -254,6 +279,7 @@ app.post("/api/tool-response", async (req, res) => {
       }
       
       // Format and return the response
+      // Yanıtı formatla ve döndür
       const latestMessage = assistantMessages[0];
       const content = latestMessage.content.map(item => {
         if (item.type === "text") {
@@ -269,6 +295,7 @@ app.post("/api/tool-response", async (req, res) => {
       });
     } else {
       // If denied, cancel the run and inform the user
+      // Reddedilirse, çalışmayı iptal et ve kullanıcıyı bilgilendir
       await openai.beta.threads.runs.cancel(threadId, runId);
       
       res.json({
@@ -284,11 +311,13 @@ app.post("/api/tool-response", async (req, res) => {
 });
 
 // Serve the main HTML file for any other routes
+// Diğer tüm rotalar için ana HTML dosyasını sun
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 // Start the server
+// Sunucuyu başlat
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`Open http://localhost:${PORT} in your browser to use the Todo Assistant`);

@@ -2,14 +2,17 @@ import OpenAI from "openai";
 import { config } from "dotenv";
 
 // Load environment variables from .env file
+// .env dosyasından ortam değişkenlerini yükle
 config();
 
 // Initialize OpenAI client
+// OpenAI istemcisini başlat
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Define tool schemas
+// Araç şemalarını tanımla
 export const todoTools = [
   {
     type: "function" as const,
@@ -77,9 +80,11 @@ export const todoTools = [
 ];
 
 // Function to create or get the assistant
+// Asistanı oluşturan veya mevcut olanı getiren fonksiyon
 export async function getOrCreateAssistant() {
   try {
     // Try to find an existing assistant with the name "TodoAssistant"
+    // "TodoAssistant" adında mevcut bir asistan bulmaya çalış
     const assistants = await openai.beta.assistants.list({
       limit: 100,
     });
@@ -94,6 +99,7 @@ export async function getOrCreateAssistant() {
     }
 
     // Create a new assistant if none exists
+    // Mevcut değilse yeni bir asistan oluştur
     console.log("Creating new TodoAssistant");
     const assistant = await openai.beta.assistants.create({
       name: "TodoAssistant",

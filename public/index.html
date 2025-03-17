@@ -9,13 +9,16 @@
 <body>
     <div class="container">
         <header>
+            <!-- Başlık ve açıklama -->
             <h1>Todo Assistant</h1>
             <p>Chat with your AI-powered Todo Assistant</p>
         </header>
         
         <main>
             <div class="chat-container">
+                <!-- Sohbet mesajlarının görüntüleneceği alan -->
                 <div id="chat-messages" class="chat-messages">
+                    <!-- Karşılama mesajı -->
                     <div class="message assistant">
                         <div class="message-content">
                             Hello! I'm your Todo Assistant. I can help you manage your todo list. Try asking me to:
@@ -29,10 +32,12 @@
                     </div>
                 </div>
                 
+                <!-- Mesaj giriş alanı -->
                 <div class="chat-input">
                     <form id="message-form">
                         <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
                         <button type="submit" id="send-button">
+                            <!-- Gönder butonu ikonu -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="22" y1="2" x2="11" y2="13"></line>
                                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -44,6 +49,7 @@
         </main>
     </div>
     
+    <!-- JavaScript dosyasını yükle -->
     <script src="app.js"></script>
 </body>
 </html> 
