@@ -3,7 +3,20 @@
 A modern, AI-powered todo list and calendar management application that combines OpenAI's Assistant API with Google Calendar integration. Built with TypeScript and featuring both MCP (Model Context Protocol) and traditional API endpoints.
 
 <p align="center">
-  <img src="./images/ekran1.png" width="920" alt="Todo Assistant Main Screen">
+  <img src="./images/ekran1.png" width="820" alt="Todo Assistant Main Screen">
+  <br>
+  <em>Todo Assistant Main Screen</em>
+</p>
+
+<p align="center">
+  <img src="./images/ekran4.png" width="820" alt="Todo Assistant Approval Screen">
+  <br>
+  <em>Todo Assistant Main Screen</em>
+</p>
+
+
+<p align="center">
+  <img src="./images/ekran3.png" width="820" alt="Todo Google Calendar Screen">
   <br>
   <em>Todo Assistant Main Screen</em>
 </p>
