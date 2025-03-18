@@ -20,6 +20,15 @@ let calendar: any = null;
 let isAuthenticated = false;
 
 /**
+ * DD-MM-YYYY formatındaki tarihi YYYY-MM-DD formatına dönüştürür
+ */
+function convertDateFormat(date: string): string {
+  // DD-MM-YYYY formatını YYYY-MM-DD formatına dönüştür
+  const [day, month, year] = date.split('-');
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * Google Calendar API'sine bağlanmak için kimlik doğrulama işlemi
  */
 export async function authenticateGoogleCalendar(credentials: any): Promise<boolean> {
@@ -149,8 +158,11 @@ export async function addEventToGoogleCalendar(
   }
 
   try {
+    // DD-MM-YYYY formatından YYYY-MM-DD formatına dönüştür
+    const formattedDate = convertDateFormat(date);
+    
     // Tarih ve saat formatını düzenle
-    const [year, month, day] = date.split('-').map(Number);
+    const [year, month, day] = formattedDate.split('-').map(Number);
     const [hour, minute] = time.split(':').map(Number);
     
     const startDateTime = new Date(year, month - 1, day, hour, minute);
@@ -207,8 +219,11 @@ export async function getEventsFromGoogleCalendar(date?: string): Promise<any> {
     let timeMin, timeMax;
 
     if (date) {
+      // DD-MM-YYYY formatından YYYY-MM-DD formatına dönüştür
+      const formattedDate = convertDateFormat(date);
+      
       // Belirli bir tarih için etkinlikleri getir
-      const [year, month, day] = date.split('-').map(Number);
+      const [year, month, day] = formattedDate.split('-').map(Number);
       timeMin = new Date(year, month - 1, day, 0, 0, 0).toISOString();
       timeMax = new Date(year, month - 1, day, 23, 59, 59).toISOString();
     } else {

@@ -59,6 +59,26 @@ db.exec(`
   )
 `);
 
+/**
+ * DD-MM-YYYY formatındaki tarihi YYYY-MM-DD formatına dönüştürür
+ * Database sorgularında kullanmak için
+ */
+function convertToDBDateFormat(date: string): string {
+  // DD-MM-YYYY formatını YYYY-MM-DD formatına dönüştür
+  const [day, month, year] = date.split('-');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * YYYY-MM-DD formatındaki tarihi DD-MM-YYYY formatına dönüştürür
+ * Kullanıcıya gösterim için
+ */
+function convertToDisplayDateFormat(date: string): string {
+  // YYYY-MM-DD formatını DD-MM-YYYY formatına dönüştür
+  const [year, month, day] = date.split('-');
+  return `${day}-${month}-${year}`;
+}
+
 // Database operations
 // Veritabanı işlemleri
 export const dbOperations = {
@@ -135,11 +155,14 @@ export const dbOperations = {
     const todo = dbOperations.getTodoById(todoId);
     if (!todo) return undefined;
     
+    // Takvime kaydetmek için DD-MM-YYYY formatını YYYY-MM-DD formatına dönüştür
+    const dbDateFormat = convertToDBDateFormat(date);
+    
     const createdAt = new Date().toISOString();
     const stmt = db.prepare(
       "INSERT INTO calendar_events (todoId, title, date, time, createdAt) VALUES (?, ?, ?, ?, ?)"
     );
-    const info = stmt.run(todoId, todo.text, date, time, createdAt);
+    const info = stmt.run(todoId, todo.text, dbDateFormat, time, createdAt);
     
     return {
       id: info.lastInsertRowid as number,
@@ -155,14 +178,29 @@ export const dbOperations = {
   // Takvim etkinliklerini getir
   getCalendarEvents: (): CalendarEvent[] => {
     const stmt = db.prepare("SELECT * FROM calendar_events ORDER BY date ASC, time ASC");
-    return stmt.all() as CalendarEvent[];
+    const events = stmt.all() as CalendarEvent[];
+    
+    // Sonuçları DD-MM-YYYY formatına dönüştür
+    return events.map(event => ({
+      ...event,
+      date: convertToDisplayDateFormat(event.date)
+    }));
   },
   
   // Get calendar events for a specific date
   // Belirli bir tarih için takvim etkinliklerini getir
   getCalendarEventsByDate: (date: string): CalendarEvent[] => {
+    // Sorgu için DD-MM-YYYY formatını YYYY-MM-DD formatına dönüştür
+    const dbDateFormat = convertToDBDateFormat(date);
+    
     const stmt = db.prepare("SELECT * FROM calendar_events WHERE date = ? ORDER BY time ASC");
-    return stmt.all(date) as CalendarEvent[];
+    const events = stmt.all(dbDateFormat) as CalendarEvent[];
+    
+    // Sonuçları DD-MM-YYYY formatına dönüştür
+    return events.map(event => ({
+      ...event,
+      date: convertToDisplayDateFormat(event.date)
+    }));
   },
   
   // Get calendar events for a specific todo

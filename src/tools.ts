@@ -241,10 +241,11 @@ async function handleToggleTodo({ id }: { id: number }) {
 async function handleAddTodoToCalendar({ todoId, date, time }: { todoId: number, date: string, time: string }) {
   try {
     // Validate date format (YYYY-MM-DD)
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    // Tarih formatını doğrula (DD-MM-YYYY)
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
       return {
         success: false,
-        message: "Invalid date format. Please use YYYY-MM-DD format.",
+        message: "Invalid date format. Please use DD-MM-YYYY format.",
       };
     }
     
@@ -299,10 +300,11 @@ async function handleGetCalendarEvents({ date }: { date?: string }) {
     // If date is provided, get events for that date
     if (date) {
       // Validate date format (YYYY-MM-DD)
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      // Tarih formatını doğrula (DD-MM-YYYY)
+      if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
         return {
           success: false,
-          message: "Invalid date format. Please use YYYY-MM-DD format.",
+          message: "Invalid date format. Please use DD-MM-YYYY format.",
         };
       }
       
@@ -380,10 +382,11 @@ async function handleAddTodoToGoogleCalendar({
     }
     
     // Validate date format (YYYY-MM-DD)
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    // Tarih formatını doğrula (DD-MM-YYYY)
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
       return {
         success: false,
-        message: "Invalid date format. Please use YYYY-MM-DD format.",
+        message: "Invalid date format. Please use DD-MM-YYYY format.",
       };
     }
     
@@ -459,10 +462,11 @@ async function handleGetGoogleCalendarEvents({ date }: { date?: string }) {
     }
     
     // Validate date format if provided
-    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    // Tarih formatını doğrula (DD-MM-YYYY)
+    if (date && !/^\d{2}-\d{2}-\d{4}$/.test(date)) {
       return {
         success: false,
-        message: "Invalid date format. Please use YYYY-MM-DD format.",
+        message: "Invalid date format. Please use DD-MM-YYYY format.",
       };
     }
     
@@ -587,10 +591,11 @@ async function handleAddEventToGoogleCalendar({ title, description, date, time }
     }
     
     // Validate date format (YYYY-MM-DD)
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    // Tarih formatını doğrula (DD-MM-YYYY)
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
       return {
         success: false,
-        message: "Invalid date format. Please use YYYY-MM-DD format.",
+        message: "Invalid date format. Please use DD-MM-YYYY format.",
       };
     }
     

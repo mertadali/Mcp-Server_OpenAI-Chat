@@ -103,11 +103,11 @@ export const todoTools = [
           },
           date: {
             type: "string",
-            description: "The date for the calendar event in YYYY-MM-DD format",
+            description: "The date for the calendar event in DD-MM-YYYY format",
           },
           time: {
             type: "string",
-            description: "The time for the calendar event in HH:MM format (24-hour)",
+            description: "The time for the calendar event in HH:MM or HH.MM format (24-hour)",
           },
         },
         required: ["todoId", "date", "time"],
@@ -124,7 +124,7 @@ export const todoTools = [
         properties: {
           date: {
             type: "string",
-            description: "Optional: The date to filter events by in YYYY-MM-DD format",
+            description: "Optional: The date to filter events by in DD-MM-YYYY format",
           },
         },
         required: [],
@@ -145,11 +145,11 @@ export const todoTools = [
           },
           date: {
             type: "string",
-            description: "The date for the calendar event in YYYY-MM-DD format",
+            description: "The date for the calendar event in DD-MM-YYYY format",
           },
           time: {
             type: "string",
-            description: "The time for the calendar event in HH:MM format (24-hour)",
+            description: "The time for the calendar event in HH:MM or HH.MM format (24-hour)",
           },
           durationMinutes: {
             type: "integer",
@@ -170,7 +170,7 @@ export const todoTools = [
         properties: {
           date: {
             type: "string",
-            description: "Optional: The date to filter events by in YYYY-MM-DD format",
+            description: "Optional: The date to filter events by in DD-MM-YYYY format",
           },
         },
         required: [],
@@ -241,11 +241,11 @@ export const todoTools = [
           },
           date: {
             type: "string",
-            description: "The date for the calendar event in YYYY-MM-DD format",
+            description: "The date for the calendar event in DD-MM-YYYY format",
           },
           time: {
             type: "string",
-            description: "The time for the calendar event in HH:MM format (24-hour)",
+            description: "The time for the calendar event in HH:MM or HH.MM format (24-hour)",
           },
         },
         required: ["title", "date", "time"],
