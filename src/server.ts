@@ -4,6 +4,12 @@ import { openai, getOrCreateAssistant } from "./openai.js";
 import { executeToolCalls } from "./tools.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { processMCPRequest, setOpenAIBridge } from "./mcpHandler.js";
+import { MCPErrors, MCP_VERSION, convertToolsToMCPFormat } from "./mcp.js";
+
+// Check if MCP is enabled
+const isMCPEnabled = process.env.MCP_ENABLED === 'true';
+console.log(`MCP Protocol: ${isMCPEnabled ? 'Enabled' : 'Disabled'}`);
 
 // Get the directory name
 // Dosya yolunu al
@@ -32,6 +38,18 @@ let assistant: any;
   try {
     assistant = await getOrCreateAssistant();
     console.log(`Assistant initialized with ID: ${assistant.id}`);
+    
+    // Set up the OpenAI bridge for MCP if enabled
+    if (isMCPEnabled) {
+      setOpenAIBridge({
+        userThreads,
+        assistantId: assistant.id,
+        executeToolCall: async (toolCall) => {
+          const results = await executeToolCalls([toolCall]);
+          return results[0].output;
+        }
+      });
+    }
   } catch (error) {
     console.error("Failed to initialize assistant:", error);
     process.exit(1);
@@ -73,12 +91,15 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({ error: "userId and message are required" });
     }
     
+    console.log(`Processing message from user ${userId}: "${message}"`);
+    
     let threadId = userThreads.get(userId);
     
     if (!threadId) {
       const thread = await openai.beta.threads.create();
       threadId = thread.id;
       userThreads.set(userId, threadId);
+      console.log(`Created new thread ${threadId} for user ${userId}`);
     }
     
     // Check for any active runs and cancel them before proceeding
@@ -119,9 +140,12 @@ app.post("/api/chat", async (req, res) => {
       assistant_id: assistant.id,
     });
     
+    console.log(`Started run ${run.id} for thread ${threadId}`);
+    
     // Poll for completion
     // Tamamlanma durumunu kontrol et
     let runStatus = await pollRunStatus(threadId, run.id);
+    console.log(`Run ${run.id} completed with status: ${runStatus.status}`);
     
     // Check if tool calls are required
     // Araç çağrıları gerekiyorsa kontrol et
@@ -309,6 +333,57 @@ app.post("/api/tool-response", async (req, res) => {
     res.status(500).json({ error: "Failed to process tool response" });
   }
 });
+
+// İkinci isMCPEnabled tanımını silip, if kontrolünü güncelleyeceğim
+if (isMCPEnabled) {
+  console.log('MCP Protocol is enabled');
+  
+  // MCP endpoint
+  // Model Context Protocol endpoint
+  app.post("/mcp", async (req, res) => {
+    try {
+      // Validate request
+      if (!req.body || !req.body.messages) {
+        return res.status(400).json(MCPErrors.INVALID_REQUEST);
+      }
+
+      // Add MCP version if not provided
+      if (!req.body.version) {
+        req.body.version = MCP_VERSION;
+      }
+
+      // Add tools if not provided
+      if (!req.body.tools) {
+        req.body.tools = convertToolsToMCPFormat();
+      }
+
+      // Process the MCP request
+      const response = await processMCPRequest(req.body);
+      
+      // Return the response
+      res.json(response);
+    } catch (error) {
+      console.error("Error handling MCP request:", error);
+      res.status(500).json(MCPErrors.INTERNAL_ERROR);
+    }
+  });
+
+  // MCP health check endpoint
+  app.get("/mcp/health", (req, res) => {
+    res.json({
+      status: "ok",
+      version: MCP_VERSION
+    });
+  });
+
+  // MCP tool definitions endpoint
+  app.get("/mcp/tools", (req, res) => {
+    res.json({
+      version: MCP_VERSION,
+      tools: convertToolsToMCPFormat()
+    });
+  });
+}
 
 // Serve the main HTML file for any other routes
 // Diğer tüm rotalar için ana HTML dosyasını sun

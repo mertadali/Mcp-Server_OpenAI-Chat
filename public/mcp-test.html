@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Testing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4a6ee0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3a5bc7;
+        }
+        #response {
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .endpoints {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>MCP Protocol Testing</h1>
+    <p>Use this page to test the Model Context Protocol implementation</p>
+    
+    <div class="container">
+        <div class="endpoints">
+            <button id="health-check">Check Health</button>
+            <button id="get-tools">Get Tools</button>
+        </div>
+        
+        <h2>MCP Request</h2>
+        <textarea id="request-body">{
+  "version": "0.1",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Add 'Buy groceries' to my todo list"
+    }
+  ]
+}</textarea>
+        <button id="send-request">Send Request</button>
+        
+        <h2>MCP Response</h2>
+        <div id="response"></div>
+    </div>
+    
+    <script>
+        document.getElementById('health-check').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/mcp/health');
+                const data = await response.json();
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('get-tools').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/mcp/tools');
+                const data = await response.json();
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('send-request').addEventListener('click', async () => {
+            try {
+                const requestBody = document.getElementById('request-body').value;
+                let parsedBody;
+                
+                try {
+                    parsedBody = JSON.parse(requestBody);
+                } catch (parseError) {
+                    document.getElementById('response').textContent = `JSON Parse Error: ${parseError.message}`;
+                    return;
+                }
+                
+                const response = await fetch('/mcp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: requestBody
+                });
+                
+                const data = await response.json();
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('response').textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html> 

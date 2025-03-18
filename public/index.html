@@ -5,6 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo Assistant</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .api-links {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .api-links a {
+            color: #4a6ee0;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+        .api-links a:hover {
+            text-decoration: underline;
+        }
+        
+        /* MCP Toggle switch style */
+        .mcp-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 12px;
+            gap: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #4a6ee0;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -12,6 +85,17 @@
             <!-- Başlık ve açıklama -->
             <h1>Todo Assistant</h1>
             <p>Chat with your AI-powered Todo Assistant</p>
+            <div class="api-links">
+                <a href="/mcp-test.html">MCP Protocol Testing</a>
+            </div>
+            <div class="mcp-toggle">
+                <span class="toggle-label">OpenAI Assistant</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="use-mcp-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">MCP Protocol</span>
+            </div>
         </header>
         
         <main>
@@ -22,8 +106,6 @@
                     <div class="message assistant">
                         <div class="message-content">
                             Merhaba! Ben Todo Asistanınızım. Todo listenizi ve takviminizi yönetmenize yardımcı olabilirim.
-                            
-                            
                         </div>
                     </div>
                 </div>

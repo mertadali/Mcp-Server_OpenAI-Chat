@@ -20,8 +20,8 @@ initializeGoogleCalendar().then(success => {
   }
 });
 
-// Function to execute tool calls from OpenAI Assistant
-// OpenAI Asistan'dan gelen araç çağrılarını yürüten fonksiyon
+// Function to execute tool calls from OpenAI Assistant or MCP
+// OpenAI Asistan'dan gelen veya MCP'den gelen araç çağrılarını yürüten fonksiyon
 export async function executeToolCalls(toolCalls: any[]) {
   const results = [];
 
@@ -74,17 +74,19 @@ export async function executeToolCalls(toolCalls: any[]) {
           result = await handleAddEventToGoogleCalendar(functionArgs);
           break;
         default:
-          result = { error: `Unknown function: ${functionName}` };
+          result = {
+            error: `Unknown function: ${functionName}`
+          };
       }
       
-      // Sonuçları OpenAI'ye dönecek formatta hazırla
+      // Format the result for OpenAI format (for backward compatibility)
       results.push({
         tool_call_id: toolCall.id,
-        output: JSON.stringify(result),
+        output: typeof result === 'string' ? result : JSON.stringify(result)
       });
     }
   }
-  
+
   return results;
 }
 

@@ -2,19 +2,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageForm = document.getElementById('message-form');
     const userInput = document.getElementById('user-input');
     const chatMessages = document.getElementById('chat-messages');
+    const useMcpToggle = document.getElementById('use-mcp-toggle');
     
     // Generate a random user ID for this session
     // Bu oturum için rastgele bir kullanıcı ID'si oluştur
     const userId = 'user_' + Math.random().toString(36).substring(2, 15);
     let threadId = null;
+    let conversationId = null;
+    
+    // Use MCP protocol or direct OpenAI Assistant
+    let useMcp = false;
     
     // Track if there's a pending tool approval
     // Bekleyen bir araç onayı olup olmadığını takip et
     let pendingToolApproval = false;
     
-    // Initialize thread
-    // Thread'i başlat
-    initializeThread();
+    // Initialize
+    // Başlat
+    initialize();
+    
+    // Handle toggle switch for MCP
+    if (useMcpToggle) {
+        useMcpToggle.addEventListener('change', () => {
+            useMcp = useMcpToggle.checked;
+            // Clear messages when switching
+            chatMessages.innerHTML = '';
+            // Add initial message
+            addMessageToChat('assistant', 'Merhaba! Ben Todo Asistanınızım. Todo listenizi ve takviminizi yönetmenize yardımcı olabilirim.');
+            // Reset IDs
+            threadId = null;
+            conversationId = null;
+            // Initialize thread or conversation
+            initialize();
+        });
+    }
+    
+    // Initialize thread or MCP conversation
+    // Thread'i veya MCP konuşmasını başlat
+    function initialize() {
+        if (useMcp) {
+            console.log('Using MCP protocol');
+            // No need to initialize anything for MCP
+            // MCP konuşmaları için önceden başlatma gerekmiyor
+        } else {
+            console.log('Using direct OpenAI Assistant');
+            initializeThread();
+        }
+    }
     
     // Handle form submission
     // Form gönderimini işle
@@ -64,28 +98,55 @@ document.addEventListener('DOMContentLoaded', () => {
         showTypingIndicator();
         
         try {
-            // Send message to API
-            // Mesajı API'ye gönder
-            const response = await sendMessage(message);
+            let response;
+            
+            if (useMcp) {
+                // Use MCP protocol
+                response = await sendMessageViaMcp(message);
+            } else {
+                // Use direct OpenAI Assistant
+                response = await sendMessage(message);
+            }
             
             // Remove typing indicator
             // Yazma göstergesini kaldır
             removeTypingIndicator();
             
-            // Check if tool approval is required
-            // Araç onayı gerekip gerekmediğini kontrol et
-            if (response.requiresAction) {
-                // Set pending tool approval flag
-                // Bekleyen araç onayı bayrağını ayarla
-                pendingToolApproval = true;
+            // Process response
+            if (useMcp) {
+                // Handle MCP response
+                if (response.messages && response.messages.length > 0) {
+                    for (const msg of response.messages) {
+                        if (msg.role === 'assistant') {
+                            const content = typeof msg.content === 'string' 
+                                ? msg.content 
+                                : JSON.stringify(msg.content);
+                            addMessageToChat('assistant', content);
+                        } else if (msg.role === 'tool') {
+                            // Tool responses could be shown differently if needed
+                            console.log('Tool response:', msg);
+                        }
+                    }
+                } else {
+                    addMessageToChat('assistant', 'I received your message but have no response at this time.');
+                }
                 
-                // Show tool approval UI
-                // Araç onay arayüzünü göster
-                showToolApprovalUI(response.toolCalls, response.threadId, response.runId);
+                // Save conversation ID
+                if (response.metadata && response.metadata.conversation_id) {
+                    conversationId = response.metadata.conversation_id;
+                }
             } else {
-                // Add assistant response to chat
-                // Asistan yanıtını sohbete ekle
-                addMessageToChat('assistant', response.response);
+                // Handle OpenAI Assistant response
+                if (response.requiresAction) {
+                    // Set pending tool approval flag
+                    pendingToolApproval = true;
+                    
+                    // Show tool approval UI
+                    showToolApprovalUI(response.toolCalls, response.threadId, response.runId);
+                } else {
+                    // Add assistant response to chat
+                    addMessageToChat('assistant', response.response);
+                }
             }
         } catch (error) {
             console.error('Error sending message:', error);
@@ -132,6 +193,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Failed to send message');
+        }
+        
+        return response.json();
+    }
+    
+    // Send message via MCP
+    // MCP üzerinden mesaj gönder
+    async function sendMessageViaMcp(message) {
+        // Prepare MCP request
+        const mcpRequest = {
+            version: '0.1',
+            messages: [{
+                role: 'user',
+                content: message
+            }]
+        };
+        
+        // Add conversation ID if available
+        if (conversationId) {
+            mcpRequest.metadata = {
+                conversation_id: conversationId
+            };
+        }
+        
+        const response = await fetch('/mcp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(mcpRequest)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error?.message || 'Failed to send message via MCP');
         }
         
         return response.json();

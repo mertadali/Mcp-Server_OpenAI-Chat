@@ -7,9 +7,11 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node --esm src/server.ts",
+    "start:mcp": "MCP_ENABLED=true node dist/server.js",
+    "dev": "tsx src/server.ts",
+    "dev:mcp": "MCP_ENABLED=true tsx src/server.ts",
     "watch": "tsc -w",
-    "build-and-start": "npm run build && npm start"
+    "client": "node client/mcp-client.js"
   },
   "keywords": [
     "openai",
@@ -27,6 +29,7 @@
     "express": "^4.18.2",
     "google-auth-library": "^9.15.1",
     "googleapis": "^146.0.0",
+    "node-fetch": "^3.3.2",
     "open": "^10.1.0",
     "openai": "^4.33.0",
     "zod": "^3.24.2"
@@ -37,6 +40,7 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.13.10",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }
 }

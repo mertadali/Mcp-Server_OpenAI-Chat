@@ -36,6 +36,7 @@ A full-stack application that uses OpenAI's Assistant API to manage a todo list 
 - Support for adding, removing, listing, and toggling todo items
 - Tool approval workflow for sensitive operations
 - Multi-language support (English and Turkish)
+- **Model Context Protocol (MCP)** integration for standardized AI tool interactions
 
 ## Technical Stack
 
@@ -45,6 +46,7 @@ A full-stack application that uses OpenAI's Assistant API to manage a todo list 
 - **AI**: OpenAI Assistant API with GPT-4o model
 - **Calendar**: Google Calendar API
 - **Language**: TypeScript
+- **AI Protocol**: Model Context Protocol (MCP)
 
 ## Setup
 
@@ -108,6 +110,16 @@ The application uses SQLite to store todo items and calendar events. The databas
 - `GET /api/history/:userId` - Get chat history for a user
 - `POST /api/tool-response` - Handle tool approval or denial
 
+## Model Context Protocol (MCP) Endpoints
+
+The application supports the Model Context Protocol for standardized AI tool interactions:
+
+- `POST /mcp` - Main MCP endpoint for handling AI requests and responses
+- `GET /mcp/health` - Health check endpoint
+- `GET /mcp/tools` - Get available tools in MCP format
+
+You can test the MCP implementation by visiting the MCP test page at http://localhost:3000/mcp-test.html.
+
 ## Available Tools
 
 The assistant has access to the following tools:
@@ -166,6 +178,7 @@ Bu uygulama, OpenAI'nin Asistan API'sini kullanarak yapılacaklar listesi yönet
 - Görev ekleme, kaldırma, listeleme ve durumunu değiştirme desteği
 - Hassas işlemler için araç onay iş akışı
 - Çoklu dil desteği (İngilizce ve Türkçe)
+- Model Context Protocol (MCP) entegrasyonu
 
 ## License
 
