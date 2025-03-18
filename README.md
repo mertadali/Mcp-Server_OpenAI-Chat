@@ -1,185 +1,182 @@
-# OpenAI Todo Assistant Server
+# Todo Assistant with AI and Google Calendar Integration
 
-A full-stack application that uses OpenAI's Assistant API to manage a todo list with Google Calendar integration. The application includes a Node.js Express server backend and a responsive web frontend.
-
-
+A modern, AI-powered todo list and calendar management application that combines OpenAI's Assistant API with Google Calendar integration. Built with TypeScript and featuring both MCP (Model Context Protocol) and traditional API endpoints.
 
 <p align="center">
-  <img src="./images/ekran1.png" width="920" alt="Todo Assistant Ana Ekranı">
+  <img src="./images/ekran1.png" width="920" alt="Todo Assistant Main Screen">
   <br>
-  <em>Todo Assistant Main screen</em>
+  <em>Todo Assistant Main Screen</em>
 </p>
 
-<p align="center">
-  <img src="./images/ekran4.png" width="920" alt="Tool Onay Ekranı">
-  <br>
-  <em>Tool approval screen </em>
-</p>
+## 🌟 Key Features
 
-<p align="center">
-  <img src="./images/ekran3.png" width="920" alt="Google Takvim Entegrasyonu">
-  <br>
-  <em>Google calendar screen </em>
-</p>
+- **AI-Powered Chat Interface**: Natural language interaction using OpenAI's GPT-3.5 Turbo
+- **Smart Todo Management**: Add, remove, list, and toggle todos using natural language
+- **Google Calendar Integration**: Seamlessly sync todos with Google Calendar
+- **Multi-Language Support**: Full support for English and Turkish
+- **Tool Approval System**: Secure approval workflow for sensitive operations
+- **MCP (Model Context Protocol)**: Standardized AI tool interactions
+- **Responsive Design**: Modern, mobile-friendly web interface
+- **Persistent Storage**: SQLite database for reliable data management
 
+## 🛠️ Technical Stack
 
+- **Backend**:
+  - Node.js with Express
+  - TypeScript
+  - SQLite (via better-sqlite3)
+  - OpenAI Assistant API
+  - Google Calendar API
 
+- **Frontend**:
+  - HTML5 & CSS3
+  - Modern JavaScript
+  - Responsive Design
 
+- **AI & Integration**:
+  - OpenAI GPT-3.5 Turbo
+  - Model Context Protocol (MCP)
+  - OAuth 2.0 for Google Calendar
 
-## Features
+## 📋 Prerequisites
 
-- Chat-based interface to manage your todo list
-- Powered by OpenAI's GPT-4o Assistant API
-- Google Calendar integration for scheduling todos
-- SQLite database for persistent storage
-- Responsive web interface
-- Support for adding, removing, listing, and toggling todo items
-- Tool approval workflow for sensitive operations
-- Multi-language support (English and Turkish)
-- **Model Context Protocol (MCP)** integration for standardized AI tool interactions
+- Node.js (v16 or higher)
+- npm or yarn
+- OpenAI API key
+- Google Cloud Console account
+- SQLite
 
-## Technical Stack
+## 🚀 Getting Started
 
-- **Backend**: Node.js with Express
-- **Frontend**: HTML, CSS, JavaScript
-- **Database**: SQLite (via better-sqlite3)
-- **AI**: OpenAI Assistant API with GPT-4o model
-- **Calendar**: Google Calendar API
-- **Language**: TypeScript
-- **AI Protocol**: Model Context Protocol (MCP)
-
-## Setup
-
-1. Clone this repository
-2. Install dependencies:
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/yourusername/todo-assistant.git
+   cd todo-assistant
    ```
+
+2. **Install Dependencies**
+   ```bash
    npm install
    ```
-3. Create a `.env` file in the root directory with your OpenAI API key:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
-4. Replace `your_openai_api_key_here` with your actual OpenAI API key
-5. For Google Calendar integration, you'll need to set up OAuth 2.0 credentials:
-   - Go to the [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Enable the Google Calendar API
-   - Create OAuth 2.0 credentials (Web application type)
-   - Add `http://localhost:3000/oauth2callback` as an authorized redirect URI
-   - Download the credentials JSON file
 
-## Running the server
-
-1. Build the TypeScript code:
+3. **Environment Setup**
+   Create a `.env` file in the root directory:
+   ```env
+   OPENAI_API_KEY=your_openai_api_key
+   PORT=3000
+   CLIENT_ID=your_google_client_id
+   CLIENT_SECRET=your_google_client_secret
+   GOOGLE_REDIRECT_URI=http://localhost:3000/google/callback
    ```
+
+4. **Build and Run**
+   ```bash
+   # Build TypeScript
    npm run build
-   ```
-2. Start the server:
-   ```
+
+   # Start server
    npm start
-   ```
-3. For development with auto-reloading:
-   ```
+
+   # Development mode with auto-reload
    npm run dev
+
+   # Start with MCP enabled
+   npm run dev:mcp
    ```
 
-The server will be available at http://localhost:3000.
-
-## Database
-
-The application uses SQLite to store todo items and calendar events. The database file is created at `~/openai-todos/todos.db` and includes the following tables:
+## 🗄️ Database Structure
 
 ### Todos Table
-- `id`: Unique identifier for each todo item
-- `text`: The content of the todo item
-- `completed`: Boolean flag indicating completion status
-- `createdAt`: Timestamp when the todo was created
+```sql
+CREATE TABLE todos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL
+)
+```
 
 ### Calendar Events Table
-- `id`: Unique identifier for each calendar event
-- `todoId`: Foreign key referencing the associated todo item
-- `title`: The title of the calendar event
-- `date`: The date of the event
-- `time`: The time of the event
-- `createdAt`: Timestamp when the event was created
+```sql
+CREATE TABLE calendar_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    todoId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (todoId) REFERENCES todos(id) ON DELETE CASCADE
+)
+```
 
-## API Endpoints
+## 🔌 API Endpoints
 
-- `POST /api/thread` - Create or get a thread for a user
-- `POST /api/chat` - Send a message and get a response
-- `GET /api/history/:userId` - Get chat history for a user
-- `POST /api/tool-response` - Handle tool approval or denial
+### Traditional REST API
+- `POST /api/thread` - Create/get user thread
+- `POST /api/chat` - Send/receive messages
+- `GET /api/history/:userId` - Get chat history
+- `POST /api/tool-response` - Handle tool approvals
 
-## Model Context Protocol (MCP) Endpoints
+### MCP Endpoints
+- `POST /mcp` - Main MCP interaction endpoint
+- `GET /mcp/health` - Health check
+- `GET /mcp/tools` - Available tools listing
 
-The application supports the Model Context Protocol for standardized AI tool interactions:
+## 💡 Usage Examples
 
-- `POST /mcp` - Main MCP endpoint for handling AI requests and responses
-- `GET /mcp/health` - Health check endpoint
-- `GET /mcp/tools` - Get available tools in MCP format
+### English Commands
+```
+"Add 'Buy groceries' to my todo list"
+"Show all my todos"
+"Mark todo #3 as complete"
+"Add 'Team meeting' to calendar for tomorrow at 2pm"
+"Show my calendar events for next week"
+```
 
-You can test the MCP implementation by visiting the MCP test page at http://localhost:3000/mcp-test.html.
+### Turkish Commands
+```
+"Alışveriş yapmayı listeye ekle"
+"Tüm görevlerimi göster"
+"3 numaralı görevi tamamlandı olarak işaretle"
+"Yarın saat 14:00'da takım toplantısını takvime ekle"
+"Gelecek haftaki takvim etkinliklerimi göster"
+```
 
-## Available Tools
+## 🔒 Security Features
 
-The assistant has access to the following tools:
+- Tool approval workflow for sensitive operations
+- OAuth 2.0 authentication for Google Calendar
+- Secure credential management
+- Input validation and sanitization
 
-### Todo Management
-- `add_todo` - Add a new item to the todo list
-- `get_todos` - Get all items from the todo list
-- `remove_todo` - Remove an item from the todo list by ID
-- `toggle_todo` - Toggle the completion status of a todo item
-- `remove_all_todos` - Remove all todos from the list
+## 🌐 Google Calendar Setup
 
-### Calendar Management
-- `add_todo_to_calendar` - Add a todo to the local calendar
-- `get_calendar_events` - Get events from the local calendar
-- `add_todo_to_google_calendar` - Add a todo to Google Calendar
-- `get_google_calendar_events` - Get events from Google Calendar
-- `setup_google_calendar` - Set up Google Calendar integration
-- `authenticate_google_calendar` - Authenticate with Google Calendar
-- `check_google_calendar_auth` - Check Google Calendar authentication status
-- `add_event_to_google_calendar` - Add an event to Google Calendar
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing
+3. Enable Google Calendar API
+4. Configure OAuth 2.0 credentials:
+   - Set application type as "Web application"
+   - Add authorized redirect URI: `http://localhost:3000/google/callback`
+   - Download credentials and update `.env` file
 
-## Usage Examples
+## 🤝 Contributing
 
-You can interact with the assistant using natural language in English or Turkish. Here are some examples:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### English
-- "Add 'Buy groceries' to my todo list"
-- "Show me all my todos"
-- "Mark todo #3 as complete"
-- "Remove todo #2 from my list"
-- "What's on my todo list?"
-- "Add 'Team meeting' to my calendar on March 15 at 2pm"
-- "Show my calendar events for tomorrow"
-- "Set up Google Calendar integration"
+## 📝 License
 
-### Turkish
-- "Alışveriş yapmak görevini ekle"
-- "Tüm görevlerimi göster"
-- "3 numaralı görevi tamamlandı olarak işaretle"
-- "2 numaralı görevi listeden kaldır"
-- "Görev listemde neler var?"
-- "15 Mart saat 14:00'da 'Takım toplantısı' etkinliğini takvime ekle"
-- "Yarınki takvim etkinliklerimi göster"
-- "Google Takvim entegrasyonunu kur"
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Türkçe Açıklama
+## 🙏 Acknowledgments
 
-Bu uygulama, OpenAI'nin Asistan API'sini kullanarak yapılacaklar listesi yönetimi ve Google Takvim entegrasyonu sağlayan tam yığın bir uygulamadır. Node.js Express sunucu arka ucu ve duyarlı bir web ön ucu içerir.
+- OpenAI for their powerful Assistant API
+- Google Calendar API team
+- Contributors and testers
 
-### Özellikler
-- Yapılacaklar listenizi yönetmek için sohbet tabanlı arayüz
-- OpenAI'nin GPT-4o Asistan API'si ile güçlendirilmiş
-- Google Takvim entegrasyonu
-- Kalıcı depolama için SQLite veritabanı
-- Duyarlı web arayüzü
-- Görev ekleme, kaldırma, listeleme ve durumunu değiştirme desteği
-- Hassas işlemler için araç onay iş akışı
-- Çoklu dil desteği (İngilizce ve Türkçe)
-- Model Context Protocol (MCP) entegrasyonu
+## 📞 Support
 
-## License
-
-MIT 
+For support, please open an issue in the GitHub repository or contact the maintainers. 
