@@ -11,7 +11,7 @@ A full-stack application that uses OpenAI's Assistant API to manage a todo list 
 </p>
 
 <p align="center">
-  <img src="./images/ekran2.png" width="920" alt="Tool Onay Ekranı">
+  <img src="./images/ekran4.png" width="920" alt="Tool Onay Ekranı">
   <br>
   <em>Tool approval screen </em>
 </p>
